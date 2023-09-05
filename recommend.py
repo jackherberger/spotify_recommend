@@ -52,9 +52,14 @@ def recommend_songs():
     artist_seeds = []
     genre_seeds = sp.recommendation_genre_seeds
 
-    for i in range(20):
-        #get current track id -> add to track_seeds
-        #get current artist id -> add to artist_seeds
+    for track in top_tracks['tracks']:
+        track_id = track['id']
+        track_seeds.append(track_id)
+
+    for artist in top_artists:
+        artist_id = artist['id']
+        artist_seeds.append(artist_id)
+     
 
     recommended_songs = recommendations(artist_seeds, genre_seeds, track_seeds)
 
