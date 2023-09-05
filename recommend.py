@@ -56,7 +56,7 @@ def recommend_songs():
         #get current track id -> add to track_seeds
         #get current artist id -> add to artist_seeds
 
-    recommended_songs = recomendations(artist_seeds, genre_seeds, track_seeds)
+    recommended_songs = recommendations(artist_seeds, genre_seeds, track_seeds)
 
     song_uris = []
     for song in recommended_songs:
