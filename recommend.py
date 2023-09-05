@@ -27,11 +27,11 @@ def redirect_page():
     
     session[TOKEN_INFO] = token_info
     
-    return redirect(url_for('save_weekly', _external= True))
+    return redirect(url_for('recommend_songs', _external= True))
 
 
-@app.route('/saveWeekly')
-def save_weekly():
+@app.route('/recommend')
+def recommend_songs():
     try: 
         token_info = get_token()
     except:
@@ -41,33 +41,31 @@ def save_weekly():
     sp = spotipy.Spotify(auth=token_info['access_token'])
 
     curr_user_id = sp.current_user()['id']
-    
-    # current_playlists =  sp.current_user_playlists()['items']
-    # discover_weekly_playlist_id = None
-    # saved_weekly_playlist_id = None
 
-    # for playlist in current_playlists:
-    #     if(playlist['name'] == 'Discover Weekly'):
-    #         discover_weekly_playlist_id = playlist['id']
-    #     if(playlist['name'] == 'Saved Weekly'):
-    #         saved_weekly_playlist_id = playlist['id']
-    
-    # if not discover_weekly_playlist_id:
-    #     return 'Discover Weekly not found.'
-    
-    # if not saved_weekly_playlist_id:
-    #     new_playlist = sp.user_playlist_create(curr_user_id, "Saved Weekly", True)
-    #     saved_weekly_playlist_id = new_playlist['id']
-    
-    # discover_weekly_playlist = sp.playlist_items(discover_weekly_playlist_id)
-    # song_uris = []
-    # for song in discover_weekly_playlist['items']:
-    #     song_uri= song['track']['uri']
-    #     song_uris.append(song_uri)
-    
-    # sp.user_playlist_add_tracks(curr_user_id, saved_weekly_playlist_id, song_uris, None)
+    top_tracks = sp.current_user_top_tracks()
+    top_artists = sp.current_user_top_artists()
 
-    return ('Discover Weekly songs added successfully')
+    recommended_playlist = sp.user_playlist_create(curr_user_id, "New Recommended Songs", True)
+    recommended_playlist_id = recommended_playlist['id']
+    
+    track_seeds = []
+    artist_seeds = []
+    genre_seeds = sp.recommendation_genre_seeds
+
+    for i in range(20):
+        #get current track id -> add to track_seeds
+        #get current artist id -> add to artist_seeds
+
+    recommended_songs = recomendations(artist_seeds, genre_seeds, track_seeds)
+
+    song_uris = []
+    for song in recommended_songs:
+        uri = song['uri']
+        song_uris.append(uri)
+    
+    sp.user_playlist_add_tracks(curr_user_id, recommended_playlist_id, song_uris, None)
+
+    return ('Recomended song playlist successfully created and added to current user account. Enjoy!')
 
 def get_token():
     token_info = session.get(TOKEN_INFO, None)
